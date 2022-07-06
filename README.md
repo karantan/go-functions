@@ -151,3 +151,11 @@ Output:
 ```
 
 See [package docs](https://pkg.go.dev/github.com/karantan/gofp) for more details.
+
+## Development
+
+To add a new feature or fix a bug, first create a new branch (or fork) and make changes
+there. Then create a PR.
+
+After merging it, you will need to create a new release tag. See [Publishing a module](https://go.dev/doc/modules/publishing)
+for more details.
