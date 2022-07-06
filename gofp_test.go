@@ -61,12 +61,12 @@ func TestMember(t *testing.T) {
 }
 
 func TestForEach(t *testing.T) {
-	timesTwo := func(el int, i int, l []int) {
-		l[i] = el * 2
+	timesTwo := func(el int) int {
+		return el * 2
 	}
-	testData := []int{1, 2, 3}
-	ForEach(timesTwo, testData)
-	assert.Equal(t, testData, []int{2, 4, 6})
+	got := ForEach(timesTwo, []int{1, 2, 3})
+	want := []int{2, 4, 6}
+	assert.Equal(t, got, want)
 }
 
 func TestFilterForEach(t *testing.T) {

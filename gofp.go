@@ -28,12 +28,15 @@ func FilterForEach[K any, T any](f func(T) (K, error), slice []T) []K {
 	return fltd
 }
 
-// ForEach (aka map) on slice, that will execute a function on each element of slice.
+// ForEach (aka map) on slice, that will execute a function on each element of slice and
+// return a new slice.
 // See https://package.elm-lang.org/packages/elm/core/latest/List#map
-func ForEach[T any](f func(ele T, i int, s []T), slice []T) {
-	for i, ele := range slice {
-		f(ele, i, slice)
+func ForEach[T any](f func(ele T) T, slice []T) []T {
+	mapped := []T{}
+	for _, ele := range slice {
+		mapped = append(mapped, f(ele))
 	}
+	return mapped
 }
 
 type Element interface {

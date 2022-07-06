@@ -1,4 +1,4 @@
-module github.com/karantan/gofp
+module gofp
 
 go 1.18
 
