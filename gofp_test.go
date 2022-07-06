@@ -1,6 +1,7 @@
 package gofp
 
 import (
+	"reflect"
 	"strconv"
 	"testing"
 
@@ -84,4 +85,46 @@ func TestFilterForEach(t *testing.T) {
 		FilterForEach(f, []int{1, 2, 3}),
 		[]string{"1", "2", "3"},
 	)
+}
+
+func TestSum(t *testing.T) {
+	type args struct {
+		slice []int
+	}
+	tests := []struct {
+		name string
+		args args
+		want int
+	}{
+		{"empty slice", args{slice: []int{}}, 0},
+		{"sum ints", args{slice: []int{1, 2, 3}}, 6},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := Sum(tt.args.slice); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Sum() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestProduct(t *testing.T) {
+	type args struct {
+		slice []float64
+	}
+	tests := []struct {
+		name string
+		args args
+		want float64
+	}{
+		{"empty slice", args{slice: []float64{}}, 0},
+		{"product ints", args{slice: []float64{1, 2, 3, 4}}, 24},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := Product(tt.args.slice); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Product() = %v, want %v", got, tt.want)
+			}
+		})
+	}
 }

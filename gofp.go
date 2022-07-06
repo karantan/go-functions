@@ -58,12 +58,35 @@ type Number interface {
 	int | int8 | int16 | int32 | int64 | float32 | float64
 }
 
+// Sum list of elements.
+// See https://package.elm-lang.org/packages/elm/core/latest/List#sum
+func Sum[V Number](slice []V) V {
+	var s V
+	for _, v := range slice {
+		s += v
+	}
+	return s
+}
+
 // SumMap sums the values of map m. It supports types that are comparable.
 // See https://go.dev/ref/spec#Type_constraints and https://go.dev/ref/spec#Comparison_operators
 func SumMap[K comparable, V Number](m map[K]V) V {
 	var s V
 	for _, v := range m {
 		s += v
+	}
+	return s
+}
+
+// Product of the list elements.
+// See https://package.elm-lang.org/packages/elm/core/latest/List#product
+func Product[V Number](slice []V) V {
+	if len(slice) == 0 {
+		return 0
+	}
+	s := slice[0]
+	for _, v := range slice[1:] {
+		s *= v
 	}
 	return s
 }
