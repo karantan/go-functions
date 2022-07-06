@@ -39,13 +39,9 @@ func ForEach[T any](f func(ele T) T, slice []T) []T {
 	return mapped
 }
 
-type Element interface {
-	int | int64 | float64 | string
-}
-
 // Member checks if an `element` exists in the given `slice`. Returns true otherwise false.
 // See https://package.elm-lang.org/packages/elm/core/latest/List#member
-func Member[E Element](element E, slice []E) bool {
+func Member[T comparable](element T, slice []T) bool {
 	for _, v := range slice {
 		if element == v {
 			return true
