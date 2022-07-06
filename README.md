@@ -1,4 +1,5 @@
-# GoFP
+# GoFP ![gha build](https://github.com/karantan/gofp/workflows/Go/badge.svg)
+
 A collection of helpful functions for FP (functional programming) in Go.
 
 ## Supported features
