@@ -1,12 +1,43 @@
 package gofp
 
 import (
+	"fmt"
 	"reflect"
 	"strconv"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
+
+func TestAll(t *testing.T) {
+	isEven := func(n int) bool {
+		return n%2 == 0
+	}
+	t.Run("should be all even", func(t *testing.T) {
+		evenNumbers := []int{2, 4, 6, 8}
+		assert.True(t, All(isEven, evenNumbers))
+	})
+	t.Run("should not be all even", func(t *testing.T) {
+		numbers := []int{2, 4, 5, 8}
+		assert.False(t, All(isEven, numbers))
+	})
+
+}
+
+func TestAny(t *testing.T) {
+	isEven := func(n int) bool {
+		return n%2 == 0
+	}
+	t.Run("should contain some even numbers", func(t *testing.T) {
+		evenNumbers := []int{1, 2, 3, 4, 5}
+		assert.True(t, Any(isEven, evenNumbers))
+	})
+	t.Run("should not any even numbers", func(t *testing.T) {
+		numbers := []int{1, 3, 5, 7}
+		assert.False(t, Any(isEven, numbers))
+	})
+
+}
 
 func TestFilterString(t *testing.T) {
 	f := func(s string) bool {
@@ -17,7 +48,7 @@ func TestFilterString(t *testing.T) {
 	}
 	want := []string{"foo", "bar"}
 	got := Filter(f, []string{"barz", "foo", "bar", "fooo"})
-	assert.Equal(t, got, want)
+	assert.Equal(t, want, got)
 }
 
 func TestFilterInt(t *testing.T) {
@@ -29,7 +60,7 @@ func TestFilterInt(t *testing.T) {
 	}
 	want := []int{1, 2, 3}
 	got := Filter(f, []int{1, 2, 3, 4, 5})
-	assert.Equal(t, got, want)
+	assert.Equal(t, want, got)
 }
 
 func TestSumMap(t *testing.T) {
@@ -41,7 +72,7 @@ func TestSumMap(t *testing.T) {
 
 	gotInt := SumMap(intData)
 	wantInt := int64(6)
-	assert.Equal(t, gotInt, wantInt)
+	assert.Equal(t, wantInt, gotInt)
 
 	floatData := map[string]float64{
 		"one":   1.0,
@@ -51,7 +82,7 @@ func TestSumMap(t *testing.T) {
 
 	gotFloat := SumMap(floatData)
 	wantFloat := 6.0
-	assert.Equal(t, gotFloat, wantFloat)
+	assert.Equal(t, wantFloat, gotFloat)
 }
 
 func TestMember(t *testing.T) {
@@ -67,7 +98,7 @@ func TestForEach(t *testing.T) {
 	}
 	got := ForEach(timesTwo, []int{1, 2, 3})
 	want := []int{2, 4, 6}
-	assert.Equal(t, got, want)
+	assert.Equal(t, want, got)
 }
 
 func TestFilterForEach(t *testing.T) {
@@ -127,4 +158,121 @@ func TestProduct(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestReduceSimple(t *testing.T) {
+	numbers := []int{1, 2, 3, 4, 5, 6, 7, 8, 9}
+	reducer := func(i int, j int) int {
+		return i + j
+	}
+
+	got := Reduce(reducer, numbers)
+	want := 45
+	assert.Equal(t, want, got)
+}
+
+func TestReduceEmpty(t *testing.T) {
+	numbers := []int{}
+	reducer := func(i int, j int) int {
+		return i + j
+	}
+
+	got := Reduce(reducer, numbers)
+	want := 0
+	assert.Equal(t, want, got)
+}
+
+func TestReduceStructs(t *testing.T) {
+	type Item struct {
+		description string
+		quantity    float64
+		price       float64
+	}
+
+	items := []Item{
+		{"eggs", 20, 0.32},
+		{"milk", 3, 1.32},
+		{"oil", 2, 5},
+	}
+
+	reducer := func(price float64, i Item) float64 {
+		return price + i.quantity*i.price
+	}
+
+	got := Reduce(reducer, items)
+	want := 20.36
+	assert.Equal(t, want, got)
+}
+
+func TestForEachReduce(t *testing.T) {
+	type Person struct {
+		name string
+		age  int
+	}
+
+	friends := []string{"Mark", "Christopher", "Luke"}
+	toPerson := func(name string) Person {
+		return Person{name: name, age: len(name) * 2}
+	}
+	oldest := func(p1, p2 Person) Person {
+		if p1.age >= p2.age {
+			return p1
+		}
+		return p2
+	}
+
+	friendPersons := ForEach(toPerson, friends)
+	want := friendPersons[1] // Christopher
+	got := Reduce(oldest, friendPersons)
+	assert.Equal(t, want, got)
+}
+
+func TestForEachReduceCollection(t *testing.T) {
+	type Collection struct {
+		number int
+	}
+	numbers := []string{"1", "2", "3", "4", "5", "6", "7", "8", "9"}
+
+	mapper := func(s string) Collection {
+		n, err := strconv.Atoi(s)
+		if err != nil {
+			return Collection{0}
+		}
+		return Collection{n}
+	}
+	reducer := func(i int, c Collection) int {
+		return i + c.number
+	}
+
+	got := Reduce(reducer, ForEach(mapper, numbers))
+	want := 45
+	assert.Equal(t, want, got)
+}
+
+func TestReduceToJson(t *testing.T) {
+	type Car struct {
+		brand    string
+		model    string
+		topSpeed int
+	}
+
+	cars := []Car{
+		{"BMW", "3", 160},
+		{"Opel", "Astra", 150},
+		{"Audi", "A8", 220},
+	}
+
+	jsonReducer := func(s string, c Car) string {
+		jsonCar := fmt.Sprintf(`{"brand": "%s", "model": "%s", "top speed": %d}`, c.brand, c.model, c.topSpeed)
+		if s == "" {
+			return jsonCar
+		}
+		return s + ",\n" + jsonCar
+	}
+
+	got := Reduce(jsonReducer, cars)
+	want := `{"brand": "BMW", "model": "3", "top speed": 160},
+{"brand": "Opel", "model": "Astra", "top speed": 150},
+{"brand": "Audi", "model": "A8", "top speed": 220}`
+	assert.Equal(t, want, got)
 }

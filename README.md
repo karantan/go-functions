@@ -2,7 +2,14 @@
 
 A collection of helpful functions for FP (functional programming) in Go.
 
-## Supported features
+The goal of this package is to provide as useful and generic functions for list (slice)
+manipulation.
+
+If you want chainable functions (`.map(x -> y).reduce(x -> y, z)`) you should look at
+[go_chainable](https://github.com/neurocollective/go_chainable).
+
+
+## Some of supported features
 
 ### Filter
 Filter keeps elements that satisfy the test.
@@ -150,7 +157,8 @@ Output:
 6
 ```
 
-See [package docs](https://pkg.go.dev/github.com/karantan/gofp) for more details.
+See [tests](gofp_test.go) for more examples and [go docs](https://pkg.go.dev/github.com/karantan/gofp)
+for function descriptions.
 
 ## Development
 
